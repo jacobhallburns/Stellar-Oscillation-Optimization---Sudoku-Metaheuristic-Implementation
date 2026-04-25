@@ -188,7 +188,8 @@ def main():
         max_solutions_explored = int(sys.stdin.readline().strip())
         initial_validation(initial_board, max_solutions_explored)
         fixed_cells = [k for k, val in enumerate(initial_board) if val != "."]
-    except (ValueError, EOFError):
+    except (ValueError, EOFError) as e:
+        print(f"Input error: {e}", file=sys.stderr)
         sys.exit(1)
 
     # Default population size is set to 50. This is arbitrary
@@ -208,9 +209,16 @@ def main():
         star.evaluate()
         evaluations += 1
         if star.conflict_count == 0:
+            print(f"{''.join(star.board)}")
+            print(f"Solutions Explored: {evaluations}")
+            print("Conflicts: 0")
+            return
+        """
+        # Submission Version
+        if star.conflict_count == 0:
             print(f"{''.join(star.board)}\nConflicts: 0")
             return
-
+        """
     # The global best star is created based on the first star in the constellation index with the worst number of conflicts
     global_best_star = min(constellation, key=lambda s: s.conflict_count)
 
@@ -269,9 +277,16 @@ def main():
             evaluations += 1
             # If the star has no errors we can finish the program and escape
             if star.conflict_count == 0:
+                print(f"{''.join(star.board)}")
+                print(f"Solutions Explored: {evaluations}")
+                print("Conflicts: 0")
+                return
+            """
+            # Submission Version
+            if star.conflict_count == 0:
                 print(f"{''.join(star.board)}\nConflicts: 0")
                 return
-            
+            """
             # If the star's luminosity is better than the current global best, we replace it
             if star.luminosity > global_best_star.luminosity:
                 global_best_star.board, global_best_star.conflict_count = list(star.board), star.conflict_count
@@ -286,7 +301,11 @@ def main():
         # Phi is increased
         phi += max(0.01, 0.1 * (1 - (evaluations / max_solutions_explored)))
     # If we do not reach zero conflicts and the number of evaluations has reached the budget, print the current board and the number of conflicts
-    print(f"{''.join(global_best_star.board)}\nConflicts: {global_best_star.conflict_count}")
+    print(f"{''.join(global_best_star.board)}")
+    print(f"Solutions Explored: {evaluations}")
+    print(f"Conflicts: {global_best_star.conflict_count}")
+    # Submission Version
+    # print(f"{''.join(global_best_star.board)}\nConflicts: {global_best_star.conflict_count}")
 
 if __name__ == "__main__":
     main()
